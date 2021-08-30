@@ -1,0 +1,11 @@
+.grid {
+    background: repeating-linear-gradient(
+      transparent,transparent 16px, yellowgreen 17px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,transparent 16px, yellowgreen 17px
+    );
+    border: 1px solid yellowgreen;
+    position: relative;
+}
