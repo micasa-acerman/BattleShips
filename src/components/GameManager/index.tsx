@@ -1,4 +1,5 @@
-import * as R from "ramda";
+import { Alert, Button, Col, Divider, Row, Space, Statistic, Typography } from "antd";
+import Title from "antd/lib/typography/Title";
 import { useEffect, useState } from "react";
 import {
   IBattleFieldElement,
@@ -19,6 +20,8 @@ import {
   getCountPlayerFieldsCells,
   getCountPlayerShips,
 } from "../utils/shipHelper";
+import { LikeOutlined, RadarChartOutlined } from "@ant-design/icons";
+import Layout from "antd/lib/layout/layout";
 
 const defaultElements: IBattleFieldElement[] = [
   createShip(4, OrientationEnum.HORIZONTAL, { x: 2, y: 2 }),
@@ -106,34 +109,70 @@ function GameManager() {
     setGameStage(GameStageEnum.TURN_PLAYER);
   };
   return (
-    <div style={{ marginTop: 20, marginLeft: 20 }}>
-      <BattleField
-        elements={playerItems}
-        size={{ width: 11, height: 11 }}
-        onMove={handleMovePlayerElements}
-      />
-      <BattleField
-        elements={enemyItems}
-        size={{ width: 11, height: 11 }}
-        onClickEmptyCell={handleClickEmptyEnemyCell}
-      />
-      <div>
-        {getCountElementsByTags(playerItems, [TagTypeEnum.HIT])}/
-        {getCountPlayerFieldsCells(playerItems)}
-      </div>
-      <div>
-        {getCountElementsByTags(enemyItems, [TagTypeEnum.HIT])}/
-        {getCountPlayerShips(enemy)}
-      </div>
-      {gameStage === GameStageEnum.PLAYER_WIN && <div>You are win!</div>}
-      {gameStage === GameStageEnum.PLAYER_LOSE && <div>You are lose :(</div>}
-      {[GameStageEnum.PLAYER_WIN, GameStageEnum.PLAYER_LOSE].includes(
-        gameStage
-      ) && <button onClick={handleClickReset}>Reset</button>}
-      {gameStage === GameStageEnum.START && (
-        <button onClick={handleClickStart}>Start</button>
-      )}
-    </div>
+    <Row>
+      <Col md={8}>
+        <BattleField
+          elements={playerItems}
+          size={{ width: 11, height: 11 }}
+          onMove={handleMovePlayerElements}
+        />
+      </Col>
+      <Col md={8}>
+        <BattleField
+          elements={enemyItems}
+          size={{ width: 11, height: 11 }}
+          onClickEmptyCell={handleClickEmptyEnemyCell}
+        />
+      </Col>
+      <Col md={8}>
+        <Row>
+          <Col md={12}>
+            <Statistic
+              title="Вы"
+              value={`${getCountElementsByTags(playerItems, [
+                TagTypeEnum.HIT,
+              ])}/${getCountPlayerFieldsCells(playerItems)}`}
+              prefix={<RadarChartOutlined />}
+            />
+          </Col>
+          <Col md={12}>
+            <Statistic
+              title="Противник"
+              value={`${getCountElementsByTags(enemyItems, [
+                TagTypeEnum.HIT,
+              ])}/${getCountPlayerShips(enemy)}`}
+              prefix={<RadarChartOutlined />}
+            />
+          </Col>
+        </Row>
+        <Space style={{ marginTop: 20, width: '100%' }} direction='vertical'>
+          {gameStage === GameStageEnum.PLAYER_WIN && (
+            <Alert message="Ты выиграл!" type="success" />
+          )}
+          {gameStage === GameStageEnum.PLAYER_LOSE && (
+            <Alert message="Лузер :D" type="success" />
+          )}
+          {[GameStageEnum.PLAYER_WIN, GameStageEnum.PLAYER_LOSE].includes(
+            gameStage
+          ) && (
+            <Button type="primary" onClick={handleClickReset}>
+              Сбросить
+            </Button>
+          )}
+          {gameStage === GameStageEnum.START && (
+            <Button type="primary" onClick={handleClickStart}>
+              Начать
+            </Button>
+          )}
+          {gameStage === GameStageEnum.TURN_PLAYER && (
+            <Alert message="Твой ход" type="info" />
+          )}
+          {gameStage === GameStageEnum.TURN_ENEMY && (
+            <Alert message="Ход противника" type="info" />
+          )}
+        </Space>
+      </Col>
+    </Row>
   );
 }
 

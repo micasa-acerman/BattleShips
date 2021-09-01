@@ -1,0 +1,17 @@
+.title {
+  color: white !important;
+  line-height: 64px !important;
+  margin: 0;
+}
+.site-layout-content {
+  width: 1024px;
+  margin: 20px auto;
+  padding: 24px !important;
+  background: #fff;
+  padding: 0 50px;
+}
+
+.site-footer {
+  text-align: center;
+  border-top: 1px solid #eaeaeaea;
+}
