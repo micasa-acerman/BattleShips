@@ -1,6 +1,6 @@
 import {
   IBattleFieldElement,
-  IShip,
+  IElement,
   OrientationEnum,
   Position,
   TagTypeEnum,
@@ -83,9 +83,14 @@ export const createTargetHit = (position: Position): IBattleFieldElement => {
         style={{
           width: GRID_SIZE,
           height: GRID_SIZE,
-          background: "green",
+          fontSize: GRID_SIZE,
+          lineHeight: "1em",
+          textAlign: "center",
+          color: '#d12e6f'
         }}
-      ></div>
+      >
+        x
+      </div>
     ),
   };
 };
@@ -101,9 +106,13 @@ export const createTargetMiss = (position: Position): IBattleFieldElement => {
         style={{
           width: GRID_SIZE,
           height: GRID_SIZE,
-          background: "red",
+          fontSize: GRID_SIZE,
+          lineHeight: "1em",
+          textAlign: "center",
         }}
-      ></div>
+      >
+        •
+      </div>
     ),
   };
 };
@@ -120,7 +129,7 @@ export const getCountPlayerFieldsCells = (elements: IBattleFieldElement[]) => {
     elements.filter((e) => e.tag === TagTypeEnum.SHIP)
   );
 };
-export const getCountPlayerShips = (elements: IShip[]) => {
+export const getCountPlayerShips = (elements: IElement[]) => {
   return elements
     .map((e) => e.size.width * e.size.height)
     .reduce((p, c) => p + c, 0);
