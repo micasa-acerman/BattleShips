@@ -1,5 +1,11 @@
-import { Alert, Button, Col, Divider, Row, Space, Statistic, Typography } from "antd";
-import Title from "antd/lib/typography/Title";
+import {
+  Alert,
+  Button,
+  Col,
+  Row,
+  Space,
+  Statistic,
+} from "antd";
 import { useEffect, useState } from "react";
 import {
   IBattleFieldElement,
@@ -20,8 +26,7 @@ import {
   getCountPlayerFieldsCells,
   getCountPlayerShips,
 } from "../utils/shipHelper";
-import { LikeOutlined, RadarChartOutlined } from "@ant-design/icons";
-import Layout from "antd/lib/layout/layout";
+import { RadarChartOutlined } from "@ant-design/icons";
 
 const defaultElements: IBattleFieldElement[] = [
   createShip(4, OrientationEnum.HORIZONTAL, { x: 2, y: 2 }),
@@ -44,6 +49,7 @@ function GameManager() {
       size: { width: 4, height: 1 },
     },
   ]);
+  
   useEffect(() => {
     if (gameStage === GameStageEnum.TURN_ENEMY) {
       while (true) {
@@ -76,38 +82,9 @@ function GameManager() {
         }
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameStage]);
 
-  const handleClickEmptyEnemyCell = (pos: Position) => {
-    if (gameStage === GameStageEnum.TURN_PLAYER) {
-      const shipInPoint = !!enemy.find((s) => isLocatedInArea(s, pos));
-      const objectInPoint = !!enemyItems.find((s) => isLocatedInArea(s, pos));
-      if (!objectInPoint) {
-        setEnemyItems([
-          ...enemyItems,
-          shipInPoint ? createTargetHit(pos) : createTargetMiss(pos),
-        ]);
-        if (
-          enemyItems.filter((s) => s.tag === TagTypeEnum.HIT).length +
-            +shipInPoint ===
-          4
-        )
-          setGameStage(GameStageEnum.PLAYER_WIN);
-        else setGameStage(GameStageEnum.TURN_ENEMY);
-      }
-    }
-  };
-  const handleMovePlayerElements = (items: IBattleFieldElement[]): void => {
-    if (gameStage === GameStageEnum.START) setPlayerItems(items);
-  };
-  const handleClickReset = () => {
-    setPlayerItems(defaultElements);
-    setEnemyItems(createLabels());
-    setGameStage(GameStageEnum.START);
-  };
-  const handleClickStart = () => {
-    setGameStage(GameStageEnum.TURN_PLAYER);
-  };
   return (
     <Row>
       <Col md={8}>
@@ -145,12 +122,12 @@ function GameManager() {
             />
           </Col>
         </Row>
-        <Space style={{ marginTop: 20, width: '100%' }} direction='vertical'>
+        <Space style={{ marginTop: 20, width: "100%" }} direction="vertical">
           {gameStage === GameStageEnum.PLAYER_WIN && (
             <Alert message="Ты выиграл!" type="success" />
           )}
           {gameStage === GameStageEnum.PLAYER_LOSE && (
-            <Alert message="Лузер :D" type="success" />
+            <Alert message="Лузер :D" type="error" />
           )}
           {[GameStageEnum.PLAYER_WIN, GameStageEnum.PLAYER_LOSE].includes(
             gameStage
@@ -174,6 +151,37 @@ function GameManager() {
       </Col>
     </Row>
   );
+
+  function handleClickEmptyEnemyCell(pos: Position) {
+    if (gameStage === GameStageEnum.TURN_PLAYER) {
+      const shipInPoint = !!enemy.find((s) => isLocatedInArea(s, pos));
+      const objectInPoint = !!enemyItems.find((s) => isLocatedInArea(s, pos));
+      if (!objectInPoint) {
+        setEnemyItems([
+          ...enemyItems,
+          shipInPoint ? createTargetHit(pos) : createTargetMiss(pos),
+        ]);
+        if (
+          enemyItems.filter((s) => s.tag === TagTypeEnum.HIT).length +
+            +shipInPoint ===
+          4
+        )
+          setGameStage(GameStageEnum.PLAYER_WIN);
+        else setGameStage(GameStageEnum.TURN_ENEMY);
+      }
+    }
+  }
+  function handleMovePlayerElements(items: IBattleFieldElement[]): void {
+    if (gameStage === GameStageEnum.START) setPlayerItems(items);
+  }
+  function handleClickReset() {
+    setPlayerItems(defaultElements);
+    setEnemyItems(createLabels());
+    setGameStage(GameStageEnum.START);
+  }
+  function handleClickStart() {
+    setGameStage(GameStageEnum.TURN_PLAYER);
+  }
 }
 
 export default GameManager;

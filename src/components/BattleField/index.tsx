@@ -1,4 +1,4 @@
-import { MouseEvent, ReactElement, useRef, useState } from "react";
+import { MouseEvent, ReactElement, useEffect, useRef, useState } from "react";
 import { IBattleFieldElement, Position, Size } from "../../types";
 import {
   transformPositionFromCellsToPx,
@@ -31,8 +31,27 @@ export default function BattleFieldManager({
   onClickElement,
   onClickEmptyCell,
 }: Props): ReactElement {
-  const [dragElement, setDragElement] = useState<IDragElement>();
   const gridRef = useRef<HTMLDivElement>(null);
+  const mouseMoveCallbackRef = useRef(handleElementMouseMove);
+  const mouseUpCallbackRef = useRef(handleElementMouseUp);
+  const [dragElement, setDragElement] = useState<IDragElement>();
+  useEffect(()=>{
+    mouseMoveCallbackRef.current = handleElementMouseMove
+    mouseUpCallbackRef.current = handleElementMouseUp
+  })
+
+  useEffect(() => {
+    const handleMouseUp = (e: MouseEvent<HTMLDivElement>) =>
+      mouseUpCallbackRef.current();
+    const handleMouseMove = (e: MouseEvent<HTMLDivElement>):void =>
+      mouseMoveCallbackRef.current(e);
+    document.addEventListener('mousemove',handleMouseMove as any);
+    document.addEventListener('mouseup',handleMouseUp as any);
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove as any)
+      document.removeEventListener('mouseup', handleMouseUp as any)
+    };
+  }, []);
 
   return (
     <div
@@ -42,88 +61,13 @@ export default function BattleFieldManager({
         width: transformPositionFromCellsToPx(size.width),
         height: transformPositionFromCellsToPx(size.height),
       }}
-      onClick={(event: MouseEvent<HTMLDivElement>) => {
-        event.stopPropagation();
-        onClickEmptyCell &&
-          onClickEmptyCell(
-            {
-              x: Math.floor(
-                transformPositionFromPxToCells(
-                  event.clientX -
-                    (gridRef.current?.getBoundingClientRect().left ?? 0)
-                )
-              ),
-              y: Math.floor(
-                transformPositionFromPxToCells(
-                  event.clientY -
-                    (gridRef.current?.getBoundingClientRect().top ?? 0)
-                )
-              ),
-            },
-            event
-          );
-      }}
+      onClick={handleClickGrid}
     >
       {elements.map((el) => (
         <div
           key={el.id}
-          onMouseDown={(e: MouseEvent<HTMLDivElement>) => {
-            console.log(e.target);
-            el.draggable &&
-              setDragElement({
-                elementId: el.id,
-                shiftX:
-                  e.clientX - e.currentTarget.getBoundingClientRect().left,
-                shiftY: e.clientY - e.currentTarget.getBoundingClientRect().top,
-                x:
-                  e.clientX -
-                  (gridRef.current?.getBoundingClientRect().left ?? 0),
-                y:
-                  e.clientY -
-                  (gridRef.current?.getBoundingClientRect().top ?? 0),
-              });
-          }}
-          onMouseMove={(e: MouseEvent<HTMLDivElement>) => {
-            if (dragElement?.elementId === el.id) {
-              setDragElement({
-                ...dragElement,
-                x:
-                  e.clientX -
-                  (gridRef.current?.getBoundingClientRect().left ?? 0),
-                y:
-                  e.clientY -
-                  (gridRef.current?.getBoundingClientRect().top ?? 0),
-              });
-            }
-          }}
-          onMouseUp={() => {
-            const newElements = elements.map((el) =>
-              el.id === dragElement?.elementId
-                ? {
-                    ...el,
-                    position: {
-                      x: Math.round(
-                        transformPositionFromPxToCells(
-                          dragElement.x - dragElement.shiftX
-                        )
-                      ),
-                      y: Math.round(
-                        transformPositionFromPxToCells(
-                          dragElement.y - dragElement.shiftY
-                        )
-                      ),
-                    },
-                  }
-                : el
-            );
-            onMove && onMove(newElements);
-            console.log(newElements[0].position);
-            setDragElement(undefined);
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            onClickElement && onClickElement(el);
-          }}
+          onMouseDown={handleElementMouseDown(el)}
+          onClick={handleElementClick(el)}
           style={{
             position: "absolute",
             width: transformSizeFromCellsToPx(el.size.width),
@@ -143,4 +87,80 @@ export default function BattleFieldManager({
       ))}
     </div>
   );
+
+  function handleElementMouseUp() {
+    const newElements = elements.map((el) =>
+      el.id === dragElement?.elementId
+        ? {
+            ...el,
+            position: {
+              x: Math.round(
+                transformPositionFromPxToCells(
+                  dragElement.x - dragElement.shiftX
+                )
+              ),
+              y: Math.round(
+                transformPositionFromPxToCells(
+                  dragElement.y - dragElement.shiftY
+                )
+              ),
+            },
+          }
+        : el
+    );
+    onMove && onMove(newElements);
+    setDragElement(undefined);
+  }
+
+  function handleClickGrid(event: MouseEvent<HTMLDivElement>) {
+    event.stopPropagation();
+    onClickEmptyCell &&
+      onClickEmptyCell(
+        {
+          x: Math.floor(
+            transformPositionFromPxToCells(
+              event.clientX -
+                (gridRef.current?.getBoundingClientRect().left ?? 0)
+            )
+          ),
+          y: Math.floor(
+            transformPositionFromPxToCells(
+              event.clientY -
+                (gridRef.current?.getBoundingClientRect().top ?? 0)
+            )
+          ),
+        },
+        event
+      );
+  }
+
+  function handleElementClick(el: IBattleFieldElement) {
+    return (e: MouseEvent<HTMLDivElement>) => {
+      e.stopPropagation();
+      onClickElement && onClickElement(el);
+    };
+  }
+
+  function handleElementMouseMove(e: MouseEvent<HTMLDivElement>) {
+    console.log(dragElement)
+    if (dragElement)
+      setDragElement({
+        ...dragElement,
+        x: e.clientX - (gridRef.current?.getBoundingClientRect().left ?? 0),
+        y: e.clientY - (gridRef.current?.getBoundingClientRect().top ?? 0),
+      });
+  }
+
+  function handleElementMouseDown(el: IBattleFieldElement) {
+    return (e: MouseEvent<HTMLDivElement>) => {
+      el.draggable &&
+        setDragElement({
+          elementId: el.id,
+          shiftX: e.clientX - e.currentTarget.getBoundingClientRect().left,
+          shiftY: e.clientY - e.currentTarget.getBoundingClientRect().top,
+          x: e.clientX - (gridRef.current?.getBoundingClientRect().left ?? 0),
+          y: e.clientY - (gridRef.current?.getBoundingClientRect().top ?? 0),
+        });
+    };
+  }
 }
