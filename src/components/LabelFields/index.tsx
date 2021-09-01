@@ -1,22 +1,32 @@
 import { FC } from "react";
-import { Position } from "../../types";
-import { transformPositionFromCellsToPx } from "../utils/fieldHelper";
+import { GRID_SIZE } from "../../constants/common";
+import { OrientationEnum } from "../../types";
 
 interface Props {
-  gridSize?: number;
   labels: number[] | string[];
-  position: Position;
+  orientation: OrientationEnum;
 }
 
-const LabelFields: FC<Props> = ({ position, labels }) => {
+const LabelFields: FC<Props> = ({ labels, orientation }) => {
   return (
     <div
       style={{
-        position: "absolute",
-        top: transformPositionFromCellsToPx(position.x),
-        left: transformPositionFromCellsToPx(position.y),
+        display: "flex",
+        flexDirection: orientation,
+        justifyContent: "space-evenly",
+        width: '100%',
+        height: '100%'
       }}
-    ></div>
+    >
+      {labels.map((label) => (
+        <div
+          key={label}
+          style={{ width: GRID_SIZE, height: GRID_SIZE, textAlign: "center" }}
+        >
+          {label}
+        </div>
+      ))}
+    </div>
   );
 };
 export default LabelFields;
