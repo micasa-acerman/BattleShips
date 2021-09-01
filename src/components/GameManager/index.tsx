@@ -52,35 +52,37 @@ function GameManager() {
   
   useEffect(() => {
     if (gameStage === GameStageEnum.TURN_ENEMY) {
-      while (true) {
-        const hitCell: Position = {
-          x: Math.floor(Math.random() * 10) + 1,
-          y: Math.floor(Math.random() * 10) + 1,
-        };
-        const markInPoint = !!playerItems.find(
-          (s) =>
-            isLocatedInArea(s, hitCell) &&
-            [TagTypeEnum.HIT, TagTypeEnum.MISS].includes(s.tag)
-        );
-        const shipInPoint = !!playerItems.find(
-          (s) => isLocatedInArea(s, hitCell) && s.tag === TagTypeEnum.SHIP
-        );
-
-        if (!markInPoint) {
-          setPlayerItems([
-            ...playerItems,
-            shipInPoint ? createTargetHit(hitCell) : createTargetMiss(hitCell),
-          ]);
-          if (
-            playerItems.filter((s) => s.tag === TagTypeEnum.HIT).length +
-              +!!shipInPoint ===
-            getCountPlayerFieldsCells(playerItems)
-          )
-            setGameStage(GameStageEnum.PLAYER_LOSE);
-          else setGameStage(GameStageEnum.TURN_PLAYER);
-          break;
+      setTimeout(()=>{
+        while (true) {
+          const hitCell: Position = {
+            x: Math.floor(Math.random() * 10) + 1,
+            y: Math.floor(Math.random() * 10) + 1,
+          };
+          const markInPoint = !!playerItems.find(
+            (s) =>
+              isLocatedInArea(s, hitCell) &&
+              [TagTypeEnum.HIT, TagTypeEnum.MISS].includes(s.tag)
+          );
+          const shipInPoint = !!playerItems.find(
+            (s) => isLocatedInArea(s, hitCell) && s.tag === TagTypeEnum.SHIP
+          );
+  
+          if (!markInPoint) {
+            setPlayerItems([
+              ...playerItems,
+              shipInPoint ? createTargetHit(hitCell) : createTargetMiss(hitCell),
+            ]);
+            if (
+              playerItems.filter((s) => s.tag === TagTypeEnum.HIT).length +
+                +!!shipInPoint ===
+              getCountPlayerFieldsCells(playerItems)
+            )
+              setGameStage(GameStageEnum.PLAYER_LOSE);
+            else setGameStage(GameStageEnum.TURN_PLAYER);
+            break;
+          }
         }
-      }
+      },Math.floor(Math.random()*900+100))
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameStage]);
