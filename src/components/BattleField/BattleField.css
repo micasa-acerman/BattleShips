@@ -1,10 +1,10 @@
 .grid {
     background: repeating-linear-gradient(
-      transparent,transparent 16px, yellowgreen 17px
+      transparent,transparent 24px, yellowgreen 25px
     ),
     repeating-linear-gradient(
       90deg,
-      transparent,transparent 16px, yellowgreen 17px
+      transparent,transparent 24px, yellowgreen 25px
     );
     border: 1px solid yellowgreen;
     position: relative;

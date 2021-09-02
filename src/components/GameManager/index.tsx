@@ -9,14 +9,14 @@ import {
 import { useEffect, useState } from "react";
 import {
   IBattleFieldElement,
-  IShip,
+  IElement,
   OrientationEnum,
   GameStageEnum,
   Position,
   TagTypeEnum,
 } from "../../types";
 import BattleField from "../BattleField";
-import { isLocatedInArea } from "../utils/fieldHelper";
+import { isPointLocatedInArea } from "../utils/fieldHelper";
 import {
   createLabels,
   createShip,
@@ -43,7 +43,7 @@ function GameManager() {
   const [gameStage, setGameStage] = useState<GameStageEnum>(
     GameStageEnum.START
   );
-  const [enemy, setEnemy] = useState<IShip[]>([
+  const [enemy, setEnemy] = useState<IElement[]>([
     {
       position: { x: 1, y: 1 },
       size: { width: 4, height: 1 },
@@ -60,11 +60,11 @@ function GameManager() {
           };
           const markInPoint = !!playerItems.find(
             (s) =>
-              isLocatedInArea(s, hitCell) &&
+              isPointLocatedInArea(s, hitCell) &&
               [TagTypeEnum.HIT, TagTypeEnum.MISS].includes(s.tag)
           );
           const shipInPoint = !!playerItems.find(
-            (s) => isLocatedInArea(s, hitCell) && s.tag === TagTypeEnum.SHIP
+            (s) => isPointLocatedInArea(s, hitCell) && s.tag === TagTypeEnum.SHIP
           );
   
           if (!markInPoint) {
@@ -156,8 +156,8 @@ function GameManager() {
 
   function handleClickEmptyEnemyCell(pos: Position) {
     if (gameStage === GameStageEnum.TURN_PLAYER) {
-      const shipInPoint = !!enemy.find((s) => isLocatedInArea(s, pos));
-      const objectInPoint = !!enemyItems.find((s) => isLocatedInArea(s, pos));
+      const shipInPoint = !!enemy.find((s) => isPointLocatedInArea(s, pos));
+      const objectInPoint = !!enemyItems.find((s) => isPointLocatedInArea(s, pos));
       if (!objectInPoint) {
         setEnemyItems([
           ...enemyItems,
