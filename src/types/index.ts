@@ -14,11 +14,11 @@ export type Position = {
   x: number;
   y: number;
 };
-export interface IShip {
+export interface IElement {
   position: Position;
   size: Size;
 }
-export interface IBattleFieldElement extends IShip {
+export interface IBattleFieldElement extends IElement {
   id: string;
   element: React.ReactNode;
   draggable?: Boolean;

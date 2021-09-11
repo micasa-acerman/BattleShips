@@ -1,6 +1,14 @@
 import { MouseEvent, ReactElement, useEffect, useRef, useState } from "react";
-import { IBattleFieldElement, Position, Size } from "../../types";
+import { GRID_SIZE } from "../../constants/common";
 import {
+  IBattleFieldElement,
+  IElement,
+  Position,
+  Size,
+  TagTypeEnum,
+} from "../../types";
+import {
+  getAvailableElementPosition,
   transformPositionFromCellsToPx,
   transformPositionFromPxToCells,
   transformSizeFromCellsToPx,
@@ -18,7 +26,7 @@ interface Props {
   ) => void;
 }
 
-interface IDragElement extends Position {
+interface IDragElement extends IElement {
   elementId: string;
   shiftX: number;
   shiftY: number;
@@ -35,21 +43,32 @@ export default function BattleFieldManager({
   const mouseMoveCallbackRef = useRef(handleElementMouseMove);
   const mouseUpCallbackRef = useRef(handleElementMouseUp);
   const [dragElement, setDragElement] = useState<IDragElement>();
-  useEffect(()=>{
-    mouseMoveCallbackRef.current = handleElementMouseMove
-    mouseUpCallbackRef.current = handleElementMouseUp
-  })
+  const availableArea: IElement = {
+    position: {
+      x: 1,
+      y: 1,
+    },
+    size: {
+      width: size.width - 1,
+      height: size.height - 1,
+    },
+  };
+
+  useEffect(() => {
+    mouseMoveCallbackRef.current = handleElementMouseMove;
+    mouseUpCallbackRef.current = handleElementMouseUp;
+  });
 
   useEffect(() => {
     const handleMouseUp = (e: MouseEvent<HTMLDivElement>) =>
       mouseUpCallbackRef.current();
-    const handleMouseMove = (e: MouseEvent<HTMLDivElement>):void =>
+    const handleMouseMove = (e: MouseEvent<HTMLDivElement>): void =>
       mouseMoveCallbackRef.current(e);
-    document.addEventListener('mousemove',handleMouseMove as any);
-    document.addEventListener('mouseup',handleMouseUp as any);
+    document.addEventListener("mousemove", handleMouseMove as any);
+    document.addEventListener("mouseup", handleMouseUp as any);
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove as any)
-      document.removeEventListener('mouseup', handleMouseUp as any)
+      document.removeEventListener("mousemove", handleMouseMove as any);
+      document.removeEventListener("mouseup", handleMouseUp as any);
     };
   }, []);
 
@@ -74,11 +93,11 @@ export default function BattleFieldManager({
             height: transformSizeFromCellsToPx(el.size.height),
             top:
               dragElement?.elementId === el.id
-                ? dragElement.y - dragElement.shiftY
+                ? dragElement.position.y
                 : transformPositionFromCellsToPx(el.position.y),
             left:
               dragElement?.elementId === el.id
-                ? dragElement.x - dragElement.shiftX
+                ? dragElement.position.x
                 : transformPositionFromCellsToPx(el.position.x),
           }}
         >
@@ -94,15 +113,11 @@ export default function BattleFieldManager({
         ? {
             ...el,
             position: {
-              x: Math.round(
-                transformPositionFromPxToCells(
-                  dragElement.x - dragElement.shiftX
-                )
+              x: Math.floor(
+                transformPositionFromPxToCells(dragElement.position.x)
               ),
-              y: Math.round(
-                transformPositionFromPxToCells(
-                  dragElement.y - dragElement.shiftY
-                )
+              y: Math.floor(
+                transformPositionFromPxToCells(dragElement.position.y)
               ),
             },
           }
@@ -142,25 +157,82 @@ export default function BattleFieldManager({
   }
 
   function handleElementMouseMove(e: MouseEvent<HTMLDivElement>) {
-    console.log(dragElement)
-    if (dragElement)
+    if (dragElement) {
+      const newPosition = getAvailableElementPosition(
+        availableArea,
+        elements.filter(
+          (e) => e.id !== dragElement.elementId && e.tag === TagTypeEnum.SHIP
+        ),
+        {
+          ...dragElement,
+          position: {
+            x: Math.floor(
+              transformPositionFromPxToCells(
+                e.clientX -
+                  dragElement.shiftX -
+                  (gridRef.current?.getBoundingClientRect().left ?? 0)
+              )
+            ),
+            y: Math.floor(
+              transformPositionFromPxToCells(
+                e.clientY -
+                  dragElement.shiftY -
+                  (gridRef.current?.getBoundingClientRect().top ?? 0)
+              )
+            ),
+          },
+        }
+      );
       setDragElement({
         ...dragElement,
-        x: e.clientX - (gridRef.current?.getBoundingClientRect().left ?? 0),
-        y: e.clientY - (gridRef.current?.getBoundingClientRect().top ?? 0),
+        position: {
+          x: transformPositionFromCellsToPx(newPosition.x),
+          y: transformPositionFromCellsToPx(newPosition.y),
+        },
       });
+    }
   }
 
   function handleElementMouseDown(el: IBattleFieldElement) {
     return (e: MouseEvent<HTMLDivElement>) => {
-      el.draggable &&
+      if (el.draggable) {
+        const shiftX = e.clientX - e.currentTarget.getBoundingClientRect().left;
+        const shiftY = e.clientY - e.currentTarget.getBoundingClientRect().top;
+
+        const newPosition = getAvailableElementPosition(
+          availableArea,
+          elements.filter((e) => e.id !== el.id && e.tag === TagTypeEnum.SHIP),
+          {
+            ...el,
+            position: {
+              x: Math.floor(
+                transformPositionFromPxToCells(
+                  e.clientX -
+                    shiftX -
+                    (gridRef.current?.getBoundingClientRect().left ?? 0)
+                )
+              ),
+              y: Math.floor(
+                transformPositionFromPxToCells(
+                  e.clientY -
+                    shiftY -
+                    (gridRef.current?.getBoundingClientRect().top ?? 0)
+                )
+              ),
+            },
+          }
+        );
         setDragElement({
           elementId: el.id,
-          shiftX: e.clientX - e.currentTarget.getBoundingClientRect().left,
-          shiftY: e.clientY - e.currentTarget.getBoundingClientRect().top,
-          x: e.clientX - (gridRef.current?.getBoundingClientRect().left ?? 0),
-          y: e.clientY - (gridRef.current?.getBoundingClientRect().top ?? 0),
+          shiftX,
+          shiftY,
+          size: el.size,
+          position: {
+            x: transformPositionFromCellsToPx(newPosition.x),
+            y: transformPositionFromCellsToPx(newPosition.y),
+          },
         });
+      }
     };
   }
 }
