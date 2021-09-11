@@ -1,11 +1,4 @@
-import {
-  Alert,
-  Button,
-  Col,
-  Row,
-  Space,
-  Statistic,
-} from "antd";
+import { Alert, Button, Col, Row, Space, Statistic } from "antd";
 import { useEffect, useState } from "react";
 import {
   IBattleFieldElement,
@@ -49,10 +42,10 @@ function GameManager() {
       size: { width: 4, height: 1 },
     },
   ]);
-  
+
   useEffect(() => {
     if (gameStage === GameStageEnum.TURN_ENEMY) {
-      setTimeout(()=>{
+      setTimeout(() => {
         while (true) {
           const hitCell: Position = {
             x: Math.floor(Math.random() * 10) + 1,
@@ -64,13 +57,16 @@ function GameManager() {
               [TagTypeEnum.HIT, TagTypeEnum.MISS].includes(s.tag)
           );
           const shipInPoint = !!playerItems.find(
-            (s) => isPointLocatedInArea(s, hitCell) && s.tag === TagTypeEnum.SHIP
+            (s) =>
+              isPointLocatedInArea(s, hitCell) && s.tag === TagTypeEnum.SHIP
           );
-  
+
           if (!markInPoint) {
             setPlayerItems([
               ...playerItems,
-              shipInPoint ? createTargetHit(hitCell) : createTargetMiss(hitCell),
+              shipInPoint
+                ? createTargetHit(hitCell)
+                : createTargetMiss(hitCell),
             ]);
             if (
               playerItems.filter((s) => s.tag === TagTypeEnum.HIT).length +
@@ -82,9 +78,9 @@ function GameManager() {
             break;
           }
         }
-      },Math.floor(Math.random()*900+100))
+      }, Math.floor(Math.random() * 900 + 100));
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameStage]);
 
   return (
@@ -94,6 +90,21 @@ function GameManager() {
           elements={playerItems}
           size={{ width: 11, height: 11 }}
           onMove={handleMovePlayerElements}
+          onDoubleClickElement={(el: IBattleFieldElement) => {
+            setPlayerItems(
+              playerItems.map((item) =>
+                item.id === el.id
+                  ? {
+                      ...item,
+                      size: {
+                        width: item.size.height,
+                        height: item.size.width,
+                      },
+                    }
+                  : item
+              )
+            );
+          }}
         />
       </Col>
       <Col md={8}>
@@ -157,7 +168,9 @@ function GameManager() {
   function handleClickEmptyEnemyCell(pos: Position) {
     if (gameStage === GameStageEnum.TURN_PLAYER) {
       const shipInPoint = !!enemy.find((s) => isPointLocatedInArea(s, pos));
-      const objectInPoint = !!enemyItems.find((s) => isPointLocatedInArea(s, pos));
+      const objectInPoint = !!enemyItems.find((s) =>
+        isPointLocatedInArea(s, pos)
+      );
       if (!objectInPoint) {
         setEnemyItems([
           ...enemyItems,

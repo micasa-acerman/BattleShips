@@ -1,5 +1,4 @@
 import { MouseEvent, ReactElement, useEffect, useRef, useState } from "react";
-import { GRID_SIZE } from "../../constants/common";
 import {
   IBattleFieldElement,
   IElement,
@@ -19,7 +18,7 @@ interface Props {
   size: Size;
   elements: IBattleFieldElement[];
   onMove?: (element: IBattleFieldElement[]) => void;
-  onClickElement?: (element: IBattleFieldElement) => void;
+  onDoubleClickElement?: (element: IBattleFieldElement) => void;
   onClickEmptyCell?: (
     position: Position,
     event: MouseEvent<HTMLDivElement>
@@ -36,7 +35,7 @@ export default function BattleFieldManager({
   size,
   elements,
   onMove,
-  onClickElement,
+  onDoubleClickElement,
   onClickEmptyCell,
 }: Props): ReactElement {
   const gridRef = useRef<HTMLDivElement>(null);
@@ -86,7 +85,7 @@ export default function BattleFieldManager({
         <div
           key={el.id}
           onMouseDown={handleElementMouseDown(el)}
-          onClick={handleElementClick(el)}
+          onDoubleClick={handleElementDblClick(el)}
           style={{
             position: "absolute",
             width: transformSizeFromCellsToPx(el.size.width),
@@ -149,10 +148,10 @@ export default function BattleFieldManager({
       );
   }
 
-  function handleElementClick(el: IBattleFieldElement) {
+  function handleElementDblClick(el: IBattleFieldElement) {
     return (e: MouseEvent<HTMLDivElement>) => {
       e.stopPropagation();
-      onClickElement && onClickElement(el);
+      onDoubleClickElement && onDoubleClickElement(el);
     };
   }
 
