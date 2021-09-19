@@ -24,6 +24,7 @@
 ## Взаимосвязь компонентов
 
 ![file structure](doc/file-structure.png)
+
 Скрипт | Описание
 ------------ | -------------
 App.tsx | Определяет структуру сайта (header, body, footer)
