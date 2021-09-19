@@ -21,7 +21,10 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "coverage": "set CI=true && npm test -- --coverage --watchAll=false",
+    "jest:test": "react-scripts test --env=jest-environment-jsdom-sixteen",
+    "jest:coverage": "react-scripts test --env=jest-environment-jsdom-sixteen --watchAll=false --coverage"
   },
   "eslintConfig": {
     "extends": [
@@ -39,6 +42,26 @@
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
+    ]
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "**/*.{js,jsx,ts,tsx}"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 40,
+        "functions": 40,
+        "lines": 40,
+        "statements": 40
+      }
+    },
+    "coverageReporters": [
+      "text-summary",
+      "lcov",
+      "cobertura",
+      "text",
+      "json-summary"
     ]
   },
   "devDependencies": {
