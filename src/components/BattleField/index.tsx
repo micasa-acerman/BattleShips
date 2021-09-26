@@ -17,7 +17,7 @@ import "./BattleField.css";
 interface Props {
   size: Size;
   elements: IBattleFieldElement[];
-  onMove?: (element: IBattleFieldElement[]) => void;
+  onMove?: (element: IBattleFieldElement, position: Position) => void;
   onDoubleClickElement?: (element: IBattleFieldElement) => void;
   onClickEmptyCell?: (
     position: Position,
@@ -107,22 +107,16 @@ export default function BattleFieldManager({
   );
 
   function handleElementMouseUp() {
-    const newElements = elements.map((el) =>
-      el.id === dragElement?.elementId
-        ? {
-            ...el,
-            position: {
-              x: Math.floor(
-                transformPositionFromPxToCells(dragElement.position.x)
-              ),
-              y: Math.floor(
-                transformPositionFromPxToCells(dragElement.position.y)
-              ),
-            },
-          }
-        : el
+    const draggableElement = elements.find(
+      (el) => el.id === dragElement?.elementId
     );
-    onMove && onMove(newElements);
+    if (draggableElement && dragElement) {
+      onMove &&
+        onMove(draggableElement, {
+          x: Math.floor(transformPositionFromPxToCells(dragElement.position.x)),
+          y: Math.floor(transformPositionFromPxToCells(dragElement.position.y)),
+        });
+    }
     setDragElement(undefined);
   }
 

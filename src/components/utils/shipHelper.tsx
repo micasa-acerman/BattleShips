@@ -9,7 +9,8 @@ import { v4 as uuid } from "uuid";
 import { CSSProperties } from "react";
 import LabelFields from "../LabelFields";
 import * as R from "ramda";
-import { GRID_SIZE } from "../../constants/common";
+import Hit from "../BattleField/HitPoint/HitPoint";
+import MissPoint from "../BattleField/MissPoint/MissPoint";
 
 export const createShip = (
   width: number,
@@ -27,16 +28,7 @@ export const createShip = (
         : { width: 1, height: width },
     draggable: true,
 
-    element: (
-      <div
-        style={{
-          background: "rgba(0,0,0,.25)",
-          width: "100%",
-          height: "100%",
-          ...options?.styles,
-        }}
-      ></div>
-    ),
+    element: <div key={`${width}-${uuid()}`} className="ship"></div>,
   };
 };
 
@@ -78,20 +70,7 @@ export const createTargetHit = (position: Position): IBattleFieldElement => {
     tag: TagTypeEnum.HIT,
     position,
     size: { width: 1, height: 1 },
-    element: (
-      <div
-        style={{
-          width: GRID_SIZE,
-          height: GRID_SIZE,
-          fontSize: GRID_SIZE,
-          lineHeight: "1em",
-          textAlign: "center",
-          color: '#d12e6f'
-        }}
-      >
-        x
-      </div>
-    ),
+    element: <Hit />,
   };
 };
 
@@ -101,19 +80,7 @@ export const createTargetMiss = (position: Position): IBattleFieldElement => {
     tag: TagTypeEnum.MISS,
     position,
     size: { width: 1, height: 1 },
-    element: (
-      <div
-        style={{
-          width: GRID_SIZE,
-          height: GRID_SIZE,
-          fontSize: GRID_SIZE,
-          lineHeight: "1em",
-          textAlign: "center",
-        }}
-      >
-        •
-      </div>
-    ),
+    element: <MissPoint />,
   };
 };
 
