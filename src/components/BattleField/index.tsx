@@ -5,7 +5,7 @@ import {
   Position,
   Size,
   TagTypeEnum,
-} from "../../types";
+} from "../../types/types";
 import {
   getAvailableElementPosition,
   transformPositionFromCellsToPx,

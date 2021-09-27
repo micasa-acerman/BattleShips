@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { GRID_SIZE } from "../../constants/common";
-import { OrientationEnum } from "../../types";
+import { OrientationEnum } from "../../types/types";
 
 interface Props {
   labels: number[] | string[];

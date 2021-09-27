@@ -28,7 +28,7 @@ import {
   Position,
   Size,
   TagTypeEnum,
-} from "../types";
+} from "../types/types";
 
 configure({
   enforceActions: "observed",
@@ -59,7 +59,7 @@ class Store {
     };
   }
 
-  @action flipShape(elementId: string) {
+  @action flipShip(elementId: string) {
     const shape = this.playerElements.find((el) => el.id === elementId);
     if (shape) {
       shape.size = {

@@ -3,7 +3,7 @@ import { Header, Content, Footer } from "antd/lib/layout/layout";
 import Title from "antd/lib/typography/Title";
 import GameManager from "./components/GameManager";
 import "./App.css";
-import Store from "./store";
+import Store from "./store/store";
 
 const store = new Store();
 function App() {

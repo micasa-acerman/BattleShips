@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { GRID_SEPARATOR_WIDTH, GRID_SIZE } from "../../constants/common";
-import { IElement, Position, Square } from "../../types";
+import { IElement, Position, Square } from "../../types/types";
 
 export const transformPositionFromCellsToPx = (cells: number): number =>
   cells * (GRID_SIZE + GRID_SEPARATOR_WIDTH);

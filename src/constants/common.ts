@@ -6,4 +6,3 @@ export const OPTIONS_SAMPLES_OF_SHIPS: number[] = [
   ...new Array(4).fill(2),
   ...new Array(4).fill(1),
 ];
-console.log(OPTIONS_SAMPLES_OF_SHIPS.length)
