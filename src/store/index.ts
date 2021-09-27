@@ -46,7 +46,6 @@ class Store {
   }
   @computed
   get enemyStatistic() {
-    debugger;
     return {
       hits: getCountElementsByTags(this.enemyElements, [TagTypeEnum.HIT]),
       total: getCountPlayerShips(this.enemyShips),

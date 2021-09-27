@@ -189,8 +189,16 @@ export default function BattleFieldManager({
   function handleElementMouseDown(el: IBattleFieldElement) {
     return (e: MouseEvent<HTMLDivElement>) => {
       if (el.draggable) {
-        const shiftX = e.clientX - e.currentTarget.getBoundingClientRect().left;
-        const shiftY = e.clientY - e.currentTarget.getBoundingClientRect().top;
+        const shiftX = transformPositionFromCellsToPx(
+          Math.floor(transformPositionFromPxToCells(
+            e.clientX - e.currentTarget.getBoundingClientRect().left
+          ))
+        );
+        const shiftY = transformPositionFromCellsToPx(
+          Math.floor(transformPositionFromPxToCells(
+            e.clientY - e.currentTarget.getBoundingClientRect().top
+          ))
+        );
 
         const newPosition = getAvailableElementPosition(
           availableArea,

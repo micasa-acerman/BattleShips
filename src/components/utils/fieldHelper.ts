@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { GRID_SEPARATOR_WIDTH, GRID_SIZE } from "../../constants/common";
-import { IElement, Position, Size, Square } from "../../types";
+import { IElement, Position, Square } from "../../types";
 
 export const transformPositionFromCellsToPx = (cells: number): number =>
   cells * (GRID_SIZE + GRID_SEPARATOR_WIDTH);
@@ -8,8 +8,8 @@ export const transformPositionFromCellsToPx = (cells: number): number =>
 export const transformSizeFromCellsToPx = (cells: number): number =>
   cells * GRID_SIZE + GRID_SEPARATOR_WIDTH * (cells - 1);
 
-export const transformPositionFromPxToCells = (ps: number): number =>
-  ps / (GRID_SIZE + GRID_SEPARATOR_WIDTH);
+export const transformPositionFromPxToCells = (px: number): number =>
+  px / (GRID_SIZE + GRID_SEPARATOR_WIDTH);
 
 export const getCoords = (elem: HTMLDivElement, pageOffset: Position) => {
   var box = elem.getBoundingClientRect();

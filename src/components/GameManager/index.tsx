@@ -13,7 +13,7 @@ const GameManager: FC<Props> = ({ store }) => {
   useEffect(() => {
     store.shuffleEnemyShips();
     store.shufflePlayerShips();
-  }, []);
+  }, [store]);
 
   useEffect(() => {
     if (store.gameStage === GameStageEnum.TURN_ENEMY) {
@@ -118,7 +118,6 @@ const GameManager: FC<Props> = ({ store }) => {
     }
   }
   function handleClickReset() {
-    debugger;
     store.restart();
   }
   function handleClickStart() {
