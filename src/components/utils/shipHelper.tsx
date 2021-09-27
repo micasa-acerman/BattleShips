@@ -4,7 +4,7 @@ import {
   OrientationEnum,
   Position,
   TagTypeEnum,
-} from "../../types";
+} from "../../types/types";
 import { v4 as uuid } from "uuid";
 import { CSSProperties } from "react";
 import LabelFields from "../LabelFields";

@@ -1,15 +1,14 @@
 import { Alert, Button, Col, Row, Space, Statistic } from "antd";
 import { FC, useEffect } from "react";
-import { IBattleFieldElement, GameStageEnum, Position } from "../../types";
+import { IBattleFieldElement, GameStageEnum, Position } from "../../types/types";
 import BattleField from "../BattleField";
 import { observer } from "mobx-react-lite";
-import Store from "../../store";
+import Store from "../../store/store";
 import { RadarChartOutlined } from "@ant-design/icons";
 interface Props {
   store: Store;
 }
 const GameManager: FC<Props> = ({ store }) => {
-  console.log(store);
   useEffect(() => {
     store.shuffleEnemyShips();
     store.shufflePlayerShips();
@@ -32,7 +31,7 @@ const GameManager: FC<Props> = ({ store }) => {
           size={{ width: 11, height: 11 }}
           onMove={handlePlayerMove}
           onDoubleClickElement={(el: IBattleFieldElement) => {
-            store.flipShape(el.id);
+            store.flipShip(el.id);
           }}
         />
       </Col>
