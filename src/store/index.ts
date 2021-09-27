@@ -1,7 +1,14 @@
-import { action, observable, makeAutoObservable, computed, configure } from "mobx";
+import {
+  action,
+  observable,
+  makeAutoObservable,
+  computed,
+  configure,
+} from "mobx";
 import {
   isAvailableElementPosition,
   isPointLocatedInArea,
+  randomInteger,
 } from "../components/utils/fieldHelper";
 import {
   createLabels,
@@ -126,7 +133,7 @@ class Store {
 
   @action shuffleEnemyShips() {
     this.enemyElements = createLabels();
-    this.enemyShips = []
+    this.enemyShips = [];
     const availableArea: IElement = {
       position: {
         x: 1,
@@ -137,33 +144,25 @@ class Store {
         height: 10,
       },
     };
+
     OPTIONS_SAMPLES_OF_SHIPS.forEach((option) => {
-      const orientation: OrientationEnum =
-        Math.ceil(Math.random() * 2) % 2 === 0
-          ? OrientationEnum.HORIZONTAL
-          : OrientationEnum.VERTICAL;
-      const size: Size = {
-        width: orientation === OrientationEnum.HORIZONTAL ? option : 1,
-        height: orientation === OrientationEnum.VERTICAL ? option : 1,
-      };
+      let orientation: OrientationEnum;
+      let size: Size;
       let position: Position;
       let counter = 0;
+
       do {
+        orientation =
+          Math.ceil(Math.random() * 2) % 2 === 0
+            ? OrientationEnum.HORIZONTAL
+            : OrientationEnum.VERTICAL;
+        size = {
+          width: orientation === OrientationEnum.HORIZONTAL ? option : 1,
+          height: orientation === OrientationEnum.VERTICAL ? option : 1,
+        };
         position = {
-          x: Math.ceil(
-            Math.random() *
-              (availableArea.size.width -
-                size.width -
-                availableArea.position.x) +
-              availableArea.position.x
-          ),
-          y: Math.ceil(
-            Math.random() *
-              (availableArea.size.height -
-                size.height -
-                availableArea.position.y) +
-              availableArea.position.y
-          ),
+          x: randomInteger(availableArea.position.x, availableArea.size.width),
+          y: randomInteger(availableArea.position.y, availableArea.size.height),
         };
         if (++counter === 100) return;
       } while (
@@ -190,34 +189,30 @@ class Store {
         height: 10,
       },
     };
-    this.playerElements = createLabels();
+    this.playerElements = [];
     OPTIONS_SAMPLES_OF_SHIPS.forEach((option) => {
-      const orientation: OrientationEnum =
+      let orientation: OrientationEnum =
         Math.ceil(Math.random() * 2) % 2 === 0
           ? OrientationEnum.HORIZONTAL
           : OrientationEnum.VERTICAL;
-      const size: Size = {
+      let size: Size = {
         width: orientation === OrientationEnum.HORIZONTAL ? option : 1,
         height: orientation === OrientationEnum.VERTICAL ? option : 1,
       };
       let position: Position;
       let counter = 0;
       do {
+        orientation =
+          Math.ceil(Math.random() * 2) % 2 === 0
+            ? OrientationEnum.HORIZONTAL
+            : OrientationEnum.VERTICAL;
+        size = {
+          width: orientation === OrientationEnum.HORIZONTAL ? option : 1,
+          height: orientation === OrientationEnum.VERTICAL ? option : 1,
+        };
         position = {
-          x: Math.ceil(
-            Math.random() *
-              (availableArea.size.width -
-                size.width -
-                availableArea.position.x) +
-              availableArea.position.x
-          ),
-          y: Math.ceil(
-            Math.random() *
-              (availableArea.size.height -
-                size.height -
-                availableArea.position.y) +
-              availableArea.position.y
-          ),
+          x: randomInteger(availableArea.position.x, availableArea.size.width),
+          y: randomInteger(availableArea.position.y, availableArea.size.height),
         };
         if (++counter === 100) return;
       } while (
@@ -228,6 +223,7 @@ class Store {
       );
       this.playerElements.push(createShip(option, orientation, position));
     });
+    this.playerElements.push(...createLabels());
   }
 }
 
